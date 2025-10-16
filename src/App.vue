@@ -1,11 +1,29 @@
 <template>
   <div class="container-fluid mt-3">
-    <input
-      type="text"
-      class="form-control"
-      v-model="criterioDeBusqueda"
-      placeholder="Ingresar un criterio de busqueda..."
-    />
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <label for="filtroNombre" class="form-label">Filtrar por Nombre/Apellido:</label>
+        <input
+          id="filtroNombre"
+          type="text"
+          class="form-control"
+          v-model="filtroNombre"
+          placeholder="Ingrese nombre o apellido..."
+          @input="actualizarFiltros"
+        />
+      </div>
+      <div class="col-md-6">
+        <label for="filtroDni" class="form-label">Filtrar por DNI:</label>
+        <input
+          id="filtroDni"
+          type="text"
+          class="form-control"
+          v-model="filtroDni"
+          placeholder="Ingrese DNI..."
+          @input="actualizarFiltros"
+        />
+      </div>
+    </div>
     <br />
     <div class="card-deck m-0">
       <div class="row">
@@ -27,7 +45,8 @@
 export default {
   data() {
     return {
-      criterioDeBusqueda: '',
+      filtroNombre: '',
+      filtroDni: '',
       personas: [
         { nombre: 'Daniel', apellido: 'Sanchez', correo: 'danielsanchez68@hotmail.com', dni: '20442873' },
         { nombre: 'Juan', apellido: 'Perez', correo: 'j@p.gmail.com', dni: '12345678' },
@@ -39,14 +58,30 @@ export default {
   computed: {
     personasFiltradas() {
       return this.personas.filter((p) => {
-        const t = `${p.nombre} ${p.apellido} ${p.dni} ${p.correo}`
-        return t.toLowerCase().includes(this.criterioDeBusqueda.toLowerCase())
+        // Filtro por nombre/apellido
+        const nombreCompleto = `${p.nombre} ${p.apellido}`.toLowerCase()
+        const cumpleFiltroNombre = this.filtroNombre === '' || 
+          nombreCompleto.includes(this.filtroNombre.toLowerCase())
+        
+        // Filtro por DNI
+        const cumpleFiltroDni = this.filtroDni === '' || 
+          p.dni.includes(this.filtroDni)
+        
+        // Ambos filtros deben cumplirse (AND lógico)
+        return cumpleFiltroNombre && cumpleFiltroDni
       })
     },
   },
   methods: {
     getNombreCompleto(p) {
       return `${p.nombre} ${p.apellido}`
+    },
+    actualizarFiltros() {
+      // Este método se ejecuta cuando cambian los filtros
+      console.log('Filtros actualizados:', {
+        nombre: this.filtroNombre,
+        dni: this.filtroDni
+      })
     },
   },
 }
