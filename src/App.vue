@@ -1,5 +1,9 @@
 <template>
-  <div class="container-fluid mt-3">
+  <div>
+    <header class="text-center mb-4 py-3">
+      <h1 class="display-4 fw-bold text-primary">Directorio de Personas</h1>
+    </header>
+    <div class="container-fluid mt-3">
     <div class="row mb-3">
       <div class="col-md-6">
         <label for="filtroNombre" class="form-label">Filtrar por Nombre/Apellido:</label>
@@ -47,6 +51,7 @@
           </div>
         </div>
       </div>
+    </div>
     </div>
   </div>
 </template>
