@@ -26,6 +26,14 @@
         />
       </div>
     </div>
+    
+    <!-- Alert de advertencia para filtros cortos -->
+    <div v-if="mostrarAdvertencia" class="alert alert-warning alert-dismissible fade show mt-3" role="alert">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>
+      <strong>Advertencia:</strong> Para obtener mejores resultados, ingrese al menos 3 caracteres en alguno de los filtros.
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    
     <br />
     <div class="card-deck m-0">
       <div class="row">
@@ -58,6 +66,13 @@ export default {
     }
   },
   computed: {
+    mostrarAdvertencia() {
+      // Mostrar advertencia si hay algún filtro con contenido pero menos de 3 caracteres
+      const filtroNombreCorto = this.filtroNombre.trim() !== '' && this.filtroNombre.trim().length < 3
+      const filtroDniCorto = this.filtroDni.trim() !== '' && this.filtroDni.trim().length < 3
+      
+      return filtroNombreCorto || filtroDniCorto
+    },
     personasFiltradas() {
       return this.personas.filter((p) => {
         // Verificar si los filtros están habilitados (no vacíos)
