@@ -7,6 +7,7 @@
           id="filtroNombre"
           type="text"
           class="form-control"
+          :class="{ 'filtro-deshabilitado': filtroNombre.trim() === '' }"
           v-model="filtroNombre"
           placeholder="Ingrese nombre o apellido..."
           @input="actualizarFiltros"
@@ -18,6 +19,7 @@
           id="filtroDni"
           type="text"
           class="form-control"
+          :class="{ 'filtro-deshabilitado': filtroDni.trim() === '' }"
           v-model="filtroDni"
           placeholder="Ingrese DNI..."
           @input="actualizarFiltros"
@@ -58,17 +60,33 @@ export default {
   computed: {
     personasFiltradas() {
       return this.personas.filter((p) => {
-        // Filtro por nombre/apellido
-        const nombreCompleto = `${p.nombre} ${p.apellido}`.toLowerCase()
-        const cumpleFiltroNombre = this.filtroNombre === '' || 
-          nombreCompleto.includes(this.filtroNombre.toLowerCase())
+        // Verificar si los filtros están habilitados (no vacíos)
+        const filtroNombreHabilitado = this.filtroNombre.trim() !== ''
+        const filtroDniHabilitado = this.filtroDni.trim() !== ''
         
-        // Filtro por DNI
-        const cumpleFiltroDni = this.filtroDni === '' || 
-          p.dni.includes(this.filtroDni)
+        // Si ningún filtro está habilitado, mostrar todas las personas
+        if (!filtroNombreHabilitado && !filtroDniHabilitado) {
+          return true
+        }
         
-        // Ambos filtros deben cumplirse (AND lógico)
-        return cumpleFiltroNombre && cumpleFiltroDni
+        // Verificar cumplimiento de cada filtro habilitado
+        let cumpleFiltros = false
+        
+        // Filtro por nombre/apellido (si está habilitado)
+        if (filtroNombreHabilitado) {
+          const nombreCompleto = `${p.nombre} ${p.apellido}`.toLowerCase()
+          const cumpleFiltroNombre = nombreCompleto.includes(this.filtroNombre.toLowerCase())
+          cumpleFiltros = cumpleFiltros || cumpleFiltroNombre
+        }
+        
+        // Filtro por DNI (si está habilitado)
+        if (filtroDniHabilitado) {
+          const cumpleFiltroDni = p.dni.includes(this.filtroDni)
+          cumpleFiltros = cumpleFiltros || cumpleFiltroDni
+        }
+        
+        // Resultado excluyente: debe cumplir al menos uno de los filtros habilitados
+        return cumpleFiltros
       })
     },
   },
@@ -78,11 +96,38 @@ export default {
     },
     actualizarFiltros() {
       // Este método se ejecuta cuando cambian los filtros
+      // La reactividad de Vue se encarga de actualizar automáticamente
+      // la computed property personasFiltradas
+      const filtroNombreHabilitado = this.filtroNombre.trim() !== ''
+      const filtroDniHabilitado = this.filtroDni.trim() !== ''
+      
       console.log('Filtros actualizados:', {
         nombre: this.filtroNombre,
-        dni: this.filtroDni
+        dni: this.filtroDni,
+        nombreHabilitado: filtroNombreHabilitado,
+        dniHabilitado: filtroDniHabilitado
       })
     },
   },
 }
 </script>
+
+<style scoped>
+.filtro-deshabilitado {
+  background-color: #f8f9fa !important;
+  color: #6c757d !important;
+  border-color: #dee2e6 !important;
+  opacity: 0.7;
+}
+
+.filtro-deshabilitado::placeholder {
+  color: #adb5bd !important;
+  opacity: 1;
+}
+
+.filtro-deshabilitado:focus {
+  background-color: #f8f9fa !important;
+  border-color: #dee2e6 !important;
+  box-shadow: 0 0 0 0.2rem rgba(108, 117, 125, 0.25) !important;
+}
+</style>
